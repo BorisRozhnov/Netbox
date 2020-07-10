@@ -27,65 +27,60 @@ import netbox_data
 #print(srv)
 
 blades = [
-    {'bay': '1', 'name': 's001vs-esxi54.sibur.local', 'serial': 'CZJ3450BG3', 'status': 'OK', 'power': 'On', 'enclosure_name': 'Rack_11', 'enclosure_ip': '10.2.12.161'},
-    {'bay': '2', 'name': 's001vs-esxi55.sibur.local', 'serial': 'CZJ3450BG2', 'status': 'OK', 'power': 'On', 'enclosure_name': 'Rack_11', 'enclosure_ip': '10.2.12.161'},
-    {'bay': '3', 'name': 's001vs-esxi56.sibur.local', 'serial': '', 'status': 'OK', 'power': 'On', 'enclosure_name': 'Rack_11', 'enclosure_ip': '10.2.12.161'}
+    {'bay': '01', 'name': 's001vs-esxi54.sibur.local', 'serial': 'CZJ3450BG3', 'status': 'OK', 'power': 'On', 'rack_name':'01', 'enclosure_name': '02', 'enclosure_ip': '10.2.12.161'},
+    {'bay': '02', 'name': 's001vs-esxi55.sibur.local', 'serial': 'CZJ3450BG2', 'status': 'OK', 'power': 'On', 'rack_name':'02','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'},
+    {'bay': '03', 'name': 's001vs-esxi56.sibur.local', 'serial': '', 'status': 'OK', 'power': 'On', 'rack_name':'05','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'}
           ]
-#print(blades[0]['name'])
+print(blades[0]['name'])
+print(blades)
+
 
 import pynetbox
 
 API_TOKEN = "0123456789abcdef0123456789abcdef01234567"
 NB_URL = "http://192.168.56.101:8000"
 
-def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN):
+def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '001'):
     """
     The function create blades in netbox
     blades are child devices located in specified rack, enclosure and bays
+    create blades only in 1 and 2 sites
     """
     nb = pynetbox.api(url, token=token)
+
+    #site_id
+    if site   == '002':
+        site_id=2
+    elif site == '320':
+        site_id=3
+    else:
+        site_id=1
+
+    #creating blade servers
     for server in servers:
         device_parameters = {
             "name": server['name'],
             "device_type": 3,       #nb.dcim.device_types.get(3).serialize()
             "device_role": 3,       #nb.dcim.device_roles.get(3).serialize()
-            "site": 1,              #need to mark somehow
+            "site": site_id,        #1 if site=='001' else 2,
             "serial": server['serial'],
-            "rack": server['rack_name'],
-            "enclosure": server['enclosure_name'],
-            "bay":server['bay'],
+            "rack": nb.dcim.racks.get(name=f'Site{site}.Rack{server["rack_name"]}').id,
             "primary_ip":server['enclosure_ip']
         }
         new_device = nb.dcim.devices.create(**device_parameters) # **kwarg
         print(new_device)
-    #        "name": srv['name'],
+        #putting blades to enclosure bays
+        #print(f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')      ##DEBUG
+        thebay = nb.dcim.device_bays.get(name=f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')
+        thebay.installed_device = {'name': server['name']}
+        thebay.save()
 
 
-#create_devices_netbox(blades)
+
+
+create_blades_netbox(blades, site='002')
+
+
 #help(netbox_data.get_data_netbox)
 
-"""
-{'bay': ii[0], 'name': ii[1], 'serial': ii[2], 'status': str(ii[3]), 'power': ii[4], 'enclosure_name': ilo_enclosure_name, 'enclosure_ip': ilo_enclosure_ip}
-            nb_blades.append({'name': nb_device.name,
-                              'site': nb_device.site,
-                              'rack': nb_device.rack,
-                              'enclosure': nb_device.parent_device.display_name,
-                              'bay': nb_device.parent_device.device_bay,
-                              'status': nb_device.status,
-                              'serial': nb_device.serial,
-                              'ipaddress': nb_device.primary_ip4,
-                              'type': nb_device.device_type,
-                              'role': nb_device.device_role
-"""
-
-
-
-
-
-s=nb.dcim.devices.filter(device_type=1)
-
-# put server into bay
-z=nb.dcim.device_bays.all()
-z[10].installed_device = {'name':'s001vs-esxi54.sibur.local'}
-z[10].save()
 
