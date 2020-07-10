@@ -51,7 +51,7 @@ def connect_hp_enclosure(host,user,password,port=22):
     rack_name = data_binary.decode()
     rack_name = rack_name.splitlines()
     #show enclosure name
-    stdin, stdout, stderr = client.exec_command("show enclosure name")
+    stdin, stdout, stderr = client.exec_command("show enclosure info")
     data_binary = stdout.read()
     errors += stderr.read()
     enclosure_name = data_binary.decode()
@@ -118,6 +118,6 @@ def connect_hp_enclosure(host,user,password,port=22):
                 server = {'bay': ii[0], 'name': ii[1], 'serial': ii[2], 'status': str(ii[3]), 'power': ii[4], 'rack_name': ilo_rack_name, 'enclosure_name': ilo_enclosure_name, 'enclosure_name_mod': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
                 ilo_blades.append(server)
         elif len(ii) == 5 and len(ii[0]) <= 2: # serial absent and first element size less 3
-                server = {'bay': ii[0], 'name': ii[1], 'serial': '', 'status': ii[2], 'power': ii[3], 'rack_name': ilo_rack_name, 'enclosure_name': ilo_enclosure_name,  'enclosure_name_mod': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
+                server = {'bay': ii[0], 'name': ii[1], 'serial': '', 'status': ii[2], 'power': ii[3], 'rack_name': ilo_rack_name, 'enclosure_name': ilo_enclosure_name, 'enclosure_name_mod': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
                 ilo_blades.append(server)
     return ilo_blades
