@@ -115,9 +115,9 @@ def connect_hp_enclosure(host,user,password,port=22):
         #print(len(ii)) # DEBUG
         #print(ii[0])   # DEBUG
         if len(ii) == 6 and len(ii[0]) <= 2: # all fields presented and first element size less 3
-                server = {'bay': ("%02d" % int(ii[0])), 'name': ii[1], 'serial': ii[2], 'status': str(ii[3]), 'power': ii[4], 'rack_name': ilo_rack_name, 'rack_name_mod': ("%02d" % int(ilo_rack_name.split("_")[-1])), 'enclosure_name': ilo_enclosure_name, 'enclosure_name_mod': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
+                server = {'bay': ("%02d" % int(ii[0])), 'name': ii[1], 'serial': ii[2], 'status': str(ii[3]), 'power': ii[4], 'rack_name_raw': ilo_rack_name, 'rack_name': ("%02d" % int(ilo_rack_name.split("_")[-1])), 'enclosure_name_raw': ilo_enclosure_name, 'enclosure_name': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
                 ilo_blades.append(server)
         elif len(ii) == 5 and len(ii[0]) <= 2: # serial absent and first element size less 3
-                server = {'bay': ("%02d" % int(ii[0])), 'name': ii[1], 'serial': '', 'status': ii[2], 'power': ii[3], 'rack_name': ilo_rack_name, 'rack_name_mod': ("%02d" % int(ilo_rack_name.split("_")[-1])), 'enclosure_name': ilo_enclosure_name, 'enclosure_name_mod': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
+                server = {'bay': ("%02d" % int(ii[0])), 'name': ii[1], 'serial': '', 'status': ii[2], 'power': ii[3], 'rack_name_raw': ilo_rack_name, 'rack_name': ("%02d" % int(ilo_rack_name.split("_")[-1])), 'enclosure_name_raw': ilo_enclosure_name, 'enclosure_name': ("%02d" % int(ilo_enclosure_name.split("_")[-1])), 'enclosure_ip': ilo_enclosure_ip}
                 ilo_blades.append(server)
     return ilo_blades

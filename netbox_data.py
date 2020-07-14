@@ -101,8 +101,17 @@ def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '001')
         }
         new_device = nb.dcim.devices.create(**device_parameters) # **kwarg
         print(new_device)
+
         #putting blades to enclosure bays
         #print(f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')      ##DEBUG
         thebay = nb.dcim.device_bays.get(name=f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')
         thebay.installed_device = {'name': server['name']}
         thebay.save()
+
+        #creating interface and ip address
+        if server['serial']: #there is a serial number
+            #create an interface
+
+            #create ip address
+
+            pass
