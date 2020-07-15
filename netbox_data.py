@@ -1,5 +1,5 @@
 # The module contains functions to get and set data to netbox
-# pynetbox mobule is used
+# pynetbox module is used
 
 import pynetbox
 
@@ -72,7 +72,7 @@ def get_data_netbox(url = NB_URL,token = API_TOKEN, servertype = 'blades'):
         return nb_servers
     return nb_blades # default action when servertype is incorrect
 
-def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '001'):
+def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '01'):
     """
     The function create blades in netbox
     blades are child devices located in specified rack, enclosure and bays
@@ -81,22 +81,22 @@ def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '001')
     nb = pynetbox.api(url, token=token)
 
     #site_id
-    if site   == '002':
-        site_id=2
-    elif site == '320':
-        site_id=3
-    else:
-        site_id=1
+    #if site   == '002':
+    #    site_id=2
+    #elif site == '320':
+    #    site_id=3
+    #else:
+    #    site_id=1
 
     #creating blade servers
     for server in servers:
         device_parameters = {
             "name": server['name'],
-            "device_type": 3,       #nb.dcim.device_types.get(3).serialize()
-            "device_role": 3,       #nb.dcim.device_roles.get(3).serialize()
-            "site": site_id,        #1 if site=='001' else 2,
+            "device_type": 35,       #nb.dcim.device_types.get(3).serialize()        #3
+            "device_role": 13,       #nb.dcim.device_roles.get(3).serialize()        #3
+            "site": 1,        #1 if site=='001' else 2,                              #CorpCenter
             "serial": server['serial'],
-            "rack": nb.dcim.racks.get(name=f'Site{site}.Rack{server["rack_name"]}').id,
+            "rack": nb.dcim.racks.get(name=f'Cod{site}.Rack{server["rack_name"]}').id,
             "primary_ip":server['enclosure_ip']
         }
         new_device = nb.dcim.devices.create(**device_parameters) # **kwarg
@@ -104,14 +104,14 @@ def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '001')
 
         #putting blades to enclosure bays
         #print(f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')      ##DEBUG
-        thebay = nb.dcim.device_bays.get(name=f'Site{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')
+        thebay = nb.dcim.device_bays.get(name=f'Cod{site}.Rack{server["rack_name"]}.Enclosure{server["enclosure_name"]}.Bay{server["bay"]}')
         thebay.installed_device = {'name': server['name']}
         thebay.save()
 
         #creating interface and ip address
-        if server['serial']: #there is a serial number
+        if ['enclosure_ip']: #there is a ip address
             #create an interface
-
+            new_int = nb.dcim.interfaces.create({'device':new_device.id, 'type':0, 'name':'management'})
             #create ip address
+            new_ip = nb.ipam.ip_addresses.create({'device':new_device.id, 'interface': new_int.id, 'address':server["enclosure_ip"], 'status':1, 'description':'Blade enclosure management IP'})
 
-            pass

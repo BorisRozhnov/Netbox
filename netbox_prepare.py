@@ -1,15 +1,15 @@
 """
 This is a file with one-time actions required for the initial setup
 requirements:
-1 sites must present
+1 sites must be presented
 2 device roles must be created (al least 2)
 3 device types must be created (height = 10U or less)
 
 Create racks with 2 enclosure inside each with name patterns:
-Rack        - SiteXXX.RackXX (Site001.Rack01)
-Enclosure   - SiteXXX.RackXX.EnclosureXX (Site001.Rack01.Enclosure01)
+Rack        - CodXX.RackXX (Cod01.Rack01)
+Enclosure   - CodXX.RackXX.EnclosureXX (Cod01.Rack01.Enclosure01)
 Create 16 device bays in every enclosure with name pattern:
-Bay         - SiteXXX.RackXX.EnclosureXX.BayXX (Site001.Rack01.Enclosure01.Bay01)
+Bay         - CodXX.RackXX.EnclosureXX.BayXX (Cod01.Rack01.Enclosure01.Bay01)
 
 """
 
@@ -22,15 +22,17 @@ def delete_all_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN):
     """
     delete all devices and racks from netbox
     """
-    nb = pynetbox.api(NB_URL, token=API_TOKEN)
-    s = nb.dcim.devices.all()
-    r = nb.dcim.racks.all()
-    for x in range(len(s)):
-        s[x].delete()
-    nb.dcim.devices.count()
-    for x in range(len(r)):
-        r[x].delete()
-    return "You made a right decision!"
+    if False:
+        nb = pynetbox.api(NB_URL, token=API_TOKEN)
+        s = nb.dcim.devices.all()
+        #s1 = nb.dcim.devices.filter(device_role=blade_server_role_id) #filter doesn't work properly
+        r = nb.dcim.racks.all()
+        for x in range(len(s)):
+            s[x].delete()
+        nb.dcim.devices.count()
+        for x in range(len(r)):
+            r[x].delete()
+        return "You made a right decision!"
 
 
 def create_device_types_and_roles_netbox(url = NB_URL,token = API_TOKEN):
@@ -45,12 +47,12 @@ def create_device_types_and_roles_netbox(url = NB_URL,token = API_TOKEN):
     """
     nb = pynetbox.api(NB_URL, token=API_TOKEN)
     #regions
-    nb.dcim.regions.create({'name': 'Default', 'slug': 'msk'})         # id1
+    #nb.dcim.regions.create({'name': 'Default', 'slug': 'msk'})         # id1
 
     #sites
-    nb.dcim.sites.create({'name': '001', 'slug': 'cod-1', 'description': 'COD-1 16/3'})         # id1
-    nb.dcim.sites.create({'name': '002', 'slug': 'cod-1', 'description': 'COD-2 16/3'})         # id2
-    nb.dcim.sites.create({'name': '320', 'slug': 'cod-1', 'description': 'COD-2 16/3'})         # id2
+    #nb.dcim.sites.create({'name': '001', 'slug': 'cod-1', 'description': 'COD-1 16/3'})         # id1
+    #nb.dcim.sites.create({'name': '002', 'slug': 'cod-1', 'description': 'COD-2 16/3'})         # id2
+    #nb.dcim.sites.create({'name': '320', 'slug': 'cod-1', 'description': 'COD-2 16/3'})         # id2
 
     #manufactures
     nb.dcim.manufacturers.create({'name': 'Hewlett-Packard', 'slug': 'hp'})     # id1
@@ -72,7 +74,7 @@ def create_device_types_and_roles_netbox(url = NB_URL,token = API_TOKEN):
     nb.dcim.device_types.create({'manufacturer': 1, 'model':'Blade Server', 'slug': 'blade', 'u_height': 0, 'is_full_depth': True, 'subdevice_role': 'child'})              # id4
 
 
-def create_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN, my_rack_count=2,my_sites= ['001','002']):
+def create_racks_and_devices_netbox(url = NB_URL, token = API_TOKEN, my_rack_count=2, datacenters= ['01', '02']):
     """
     The function create racks and 2 enclosure in each rack in each site given
     Each enclosure has 16 bays
@@ -86,12 +88,12 @@ def create_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN, my_rack_coun
     count   = ["%02d" % x for x in range(1,my_rack_count + 1)]  # for rack creation
 
     # create racks and enclosures
-    for site in my_sites:
+    for site in datacenters:
 
         for rack in count:
             rack = {
-                'name':f'Site{site}.Rack{rack}',
-                'site':site,
+                'name':f'Cod{site}.Rack{rack}',
+                'site':1,
                 'w':'19',
                 'h':'42'
             }
@@ -102,9 +104,9 @@ def create_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN, my_rack_coun
 
             enclosure1 = {
             'name': f'{new_rack.name}.Enclosure01',
-            'site': site,
-            'device_role': 2,
-            'device_type': 1,
+            'site': 1,
+            'device_role': 12, #2
+            'device_type': 33, #1
             'rack': new_rack.id,
             'face': 0,
             'position': 10
@@ -119,9 +121,9 @@ def create_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN, my_rack_coun
 
             enclosure2 = {
             'name': f'{new_rack.name}.Enclosure02',
-            'site': site,
-            'device_role': 2,
-            'device_type': 1,
+            'site': 1,   #1
+            'device_role': 12, #2
+            'device_type': 33, #1
             'rack': new_rack.id,
             'face': 0,
             'position': 20
@@ -138,4 +140,4 @@ def create_racks_and_devices_netbox(url = NB_URL,token = API_TOKEN, my_rack_coun
 
 #create_device_types_and_roles_netbox
 #delete_all_racks_and_devices_netbox()
-#create_racks_and_devices_netbox(my_rack_count=8)
+create_racks_and_devices_netbox(my_rack_count=2)
