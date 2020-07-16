@@ -1,6 +1,7 @@
 """
 Get data from blade enclosure and put it onto netbox
 
+
 API Token: 0123456789abcdef0123456789abcdef01234567
 """
 
