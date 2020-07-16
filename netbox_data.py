@@ -1,10 +1,26 @@
 # The module contains functions to get and set data to netbox
 # pynetbox module is used
 
+import requests
 import pynetbox
 
-API_TOKEN = "0123456789abcdef0123456789abcdef01234567"
-NB_URL = "http://192.168.56.101:8000"
+#default
+NB_URL          = "https://s001tst-netbox.sibur.local/"
+API_TOKEN       = "f6288560d1b21ed5a659a9786a9f9b5722bfb129"
+
+def connect_netbox(url = NB_URL,token = API_TOKEN):
+    """
+    Connect to netbox wo ssl
+    """
+    # ssl sertificate check disable
+    session = requests.Session()
+    session.verify = False
+
+    nb = pynetbox.api(url, token=token)
+
+    nb.http_session = session
+    return nb
+
 
 def get_data_netbox(url = NB_URL,token = API_TOKEN, servertype = 'blades'):
     """
@@ -15,8 +31,9 @@ def get_data_netbox(url = NB_URL,token = API_TOKEN, servertype = 'blades'):
     servers    = standalone servers
     returns list of dictionaries
     """
-    nb = pynetbox.api(url, token=token)
+    nb = connect_netbox(url,token)
     nb_devices = nb.dcim.devices.all()
+
 
     # working with nb devices
     nb_blades = []
@@ -28,8 +45,8 @@ def get_data_netbox(url = NB_URL,token = API_TOKEN, servertype = 'blades'):
             nb_blades.append({'name': nb_device.name,
                               'site': nb_device.site,
                               'rack': nb_device.rack,
-                              'enclosure': nb_device.parent_device.display_name,
-                              'bay': nb_device.parent_device.device_bay,
+                              'enclosure': nb_device.parent_device.display_name if hasattr(nb_device,'parent_device.display_name') else '',
+                              'bay': nb_device.parent_device.device_bay if hasattr(nb_device,'parent_device.device_bay') else '',
                               'status': nb_device.status,
                               'serial': nb_device.serial,
                               'ipaddress': nb_device.primary_ip4,
@@ -78,7 +95,7 @@ def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '01'):
     blades are child devices located in specified rack, enclosure and bays
     create blades only in 1 and 2 sites
     """
-    nb = pynetbox.api(url, token=token)
+    nb = connect_netbox(url,token)
 
     #site_id
     #if site   == '002':

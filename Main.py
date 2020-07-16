@@ -7,7 +7,8 @@ API Token: 0123456789abcdef0123456789abcdef01234567
 import server_data
 import netbox_data
 
-NB_URL          = "https://10.2.68.56"
+
+NB_URL          = "https://s001tst-netbox.sibur.local/"
 API_TOKEN       = "f6288560d1b21ed5a659a9786a9f9b5722bfb129"
 enclosure_list   = 'enclosures1.txt'                              # IP addresses of blade enclosures for site
 servers_list    = 'servers.txt'                                   # IP addresses of standalone servers
@@ -18,7 +19,7 @@ servers_list    = 'servers.txt'                                   # IP addresses
 
 # read the file
 f = open(enclosure_list, 'r')
-enclosures = f.readlines()
+enclosures = f.read().splitlines()
 f.close()
 
 
@@ -36,8 +37,8 @@ nb_blades = netbox_data.get_data_netbox(url=NB_URL, token=API_TOKEN,servertype='
 if blades:
     netbox_data.create_blades_netbox(blades,site='01',url=NB_URL, token=API_TOKEN)
 
-print(blades)
-print(nb_blades)
+#print(blades)
+#print(nb_blades)
 #----------------------------------------------------------
 #future options
 # try/except, exclusions
