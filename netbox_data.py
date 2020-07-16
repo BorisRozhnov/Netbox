@@ -58,9 +58,9 @@ def get_data_netbox(url = NB_URL,token = API_TOKEN, servertype = 'blades'):
                                'type': nb_device.device_type,
                                'role': nb_device.device_role
                                })
-        else:
-            print('Unknown device role found.')
-            break
+        #else:
+        #   print('Unknown device role found.')
+        #    break
 
 
     # return data
