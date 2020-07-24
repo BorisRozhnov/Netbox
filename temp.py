@@ -7,7 +7,7 @@ import pynetbox
 
 
 
-NB_URL          = "https://s001tst-netbox.sibur.local/"
+NB_URL          = "https://s001tst-netbox.company.local/"
 API_TOKEN       = "f6288560d1b21ed5a659a9786a9f9b5722bfb129"
 
 #nb = pynetbox.api(NB_URL, token=API_TOKEN)
@@ -18,9 +18,9 @@ nb = netbox_data.connect_netbox(NB_URL,API_TOKEN)
 
 
 blades = [
-    {'bay': '01', 'name': 's001vs-esxi54.sibur.local', 'serial': 'CZJ3450BG3', 'status': 'OK', 'power': 'On', 'rack_name':'01', 'enclosure_name': '02', 'enclosure_ip': '10.2.12.161'},
-    {'bay': '02', 'name': 's001vs-esxi55.sibur.local', 'serial': 'CZJ3450BG2', 'status': 'OK', 'power': 'On', 'rack_name':'02','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'},
-    {'bay': '03', 'name': 's001vs-esxi56.sibur.local', 'serial': '', 'status': 'OK', 'power': 'On', 'rack_name':'05','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'}
+    {'bay': '01', 'name': 's001vs-esxi54.company.local', 'serial': 'CZJ3450BG3', 'status': 'OK', 'power': 'On', 'rack_name':'01', 'enclosure_name': '02', 'enclosure_ip': '10.2.12.161'},
+    {'bay': '02', 'name': 's001vs-esxi55.company.local', 'serial': 'CZJ3450BG2', 'status': 'OK', 'power': 'On', 'rack_name':'02','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'},
+    {'bay': '03', 'name': 's001vs-esxi56.company.local', 'serial': '', 'status': 'OK', 'power': 'On', 'rack_name':'05','enclosure_name': '01', 'enclosure_ip': '10.2.12.161'}
           ]
 #print(blades[0]['name'])
 ##print(nb_blades)

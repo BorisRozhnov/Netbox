@@ -5,7 +5,7 @@ import requests
 import pynetbox
 
 #default
-NB_URL          = "https://s001tst-netbox.sibur.local/"
+NB_URL          = "https://s001tst-netbox.company.local/"
 API_TOKEN       = "f6288560d1b21ed5a659a9786a9f9b5722bfb129"
 
 def connect_netbox(url = NB_URL,token = API_TOKEN):
@@ -132,3 +132,31 @@ def create_blades_netbox(servers, url = NB_URL, token = API_TOKEN, site = '01'):
             #create ip address
             new_ip = nb.ipam.ip_addresses.create({'device':new_device.id, 'interface': new_int.id, 'address':server["enclosure_ip"], 'status':1, 'description':'Blade enclosure management IP'})
 
+def create_servers_netbox(servers, url = NB_URL, token = API_TOKEN):
+    """
+    This function creates standalone servers in netbox
+    Servers are created must be placed to the rack manually
+    """
+    nb = connect_netbox(url, token)
+
+    #creating standalone servers
+    for server in servers:
+        device_parameters = {
+            "name": server['name'],
+            "device_type": 37,       #nb.dcim.device_types.get(3).serialize()        #3
+            "device_role": 11,       #nb.dcim.device_roles.get(3).serialize()        #3
+            "site": 1,        #1 if site=='001' else 2,                              #CorpCenter
+            "serial": server['serial'],
+            #"rack": nb.dcim.racks.get(name=f'Cod{site}.Rack{server["rack_name"]}').id,
+            "primary_ip":server['ip_address']
+        }
+        new_device = nb.dcim.devices.create(**device_parameters) # **kwarg
+        print(new_device)
+
+        #creating interface and ip address
+        #create an interface
+        new_int = nb.dcim.interfaces.create({'device':new_device.id, 'type':0, 'name':'management'})
+        #create ip address
+        new_ip = nb.ipam.ip_addresses.create({'device':new_device.id, 'interface': new_int.id, 'address':server["ip_address"], 'status':1, 'description':'Ilo management IP'})
+
+    print("Your servers are in the devices tab. Don't forget to put them into the corresponded rack'")

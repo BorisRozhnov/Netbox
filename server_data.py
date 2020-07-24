@@ -25,8 +25,10 @@ def connect_hp_server(host,user,password):
     ilo = hpilo.Ilo(host,user,password)
     host_data = ilo.get_host_data()
 
+    server_lst = []
     server = {'name': ilo.get_server_name(), 'product_name':host_data[1]['Product Name'], 'serial':host_data[1]['Serial Number'],'ip_address':ilo.get_network_settings()['ip_address']}
-    return server
+    server_lst.append(server)
+    return server_lst
 
 def connect_hp_enclosure(host,user,password,port=22):
     """
