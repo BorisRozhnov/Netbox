@@ -1,5 +1,9 @@
 """
+<<<<<<< HEAD
 Get data from blade enclosure and put it onto netbox
+=======
+Get data from blade enclosure and put it on netbox
+>>>>>>> cfcb7f4443b32ccfe5d18d1c96ddf0801497032e
 
 API Token: 0123456789abcdef0123456789abcdef01234567
 """
